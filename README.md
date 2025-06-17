@@ -24,7 +24,7 @@ app/         # Next.js frontend + API
    - Remote state is recommended for collaborative use; see below for tips.
 2. **Packer & Ansible**
    - Build a custom image using `packer build packer/template.pkr.hcl`.
-   - The Ansible playbook in `ansible/playbook.yml` is executed during image creation.
+   - Role required `ansible-galaxy install RedHatOfficial.rhel9_stig -p ./ansible`
 3. **Next.js app**
    - From `app/`, run `npm install` then `npm run dev` to start the combined frontend and API server.
 

@@ -1,0 +1,6 @@
+---
+- hosts: all
+  remote_user: ec2-user
+  ignore_errors: true
+  roles:
+    - { role: RedHatOfficial.rhel9_stig }

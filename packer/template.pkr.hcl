@@ -1,28 +1,37 @@
 packer {
-  required_version = ">= 1.7.0"
+  required_plugins {
+    amazon = {
+      version = ">= 1.3.7"
+      source  = "github.com/hashicorp/amazon"
+    }
+    ansible = {
+      version = ">= 1.1.3"
+      source  = "github.com/hashicorp/ansible"
+    }
+  }
 }
 
-source "amazon-ebs" "ubuntu" {
+source "amazon-ebs" "rhel9" {
   region      = var.aws_region
   instance_type = "t2.micro"
-  source_ami_filter {
-    filters = {
-      name = "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*"
-      root-device-type = "ebs"
-      virtualization-type = "hvm"
-    }
-    owners      = ["099720109477"]
-    most_recent = true
-  }
-  ssh_username = "ubuntu"
-  ami_name     = "demo-ami-${timestamp()}"
+  source_ami = "ami-0b8c2bd77c5e270cf"
+  ssh_username = "ec2-user"
+  ami_name     = "rhel9-stig"
 }
 
 build {
-  name    = "demo-image"
-  sources = ["source.amazon-ebs.ubuntu"]
+  name    = "rhel9-stig-pkr"
+  sources = ["source.amazon-ebs.rhel9"]
 
   provisioner "ansible" {
-    playbook_file = "../ansible/playbook.yml"
+    playbook_file = "../ansible/main.yml"
+
+    ansible_env_vars = [
+      "ANSIBLE_SCP_EXTRA_ARGS=-O",
+    ]
+
+    extra_arguments = [
+      "-e", "ansible_python_interpreter=/usr/bin/python3",
+    ]
   }
 }
