@@ -21,7 +21,7 @@ jobs:
         uses: hashicorp/setup-packer@v3
 
       - name: Install Ansible & Ansbile Galaxy
-        run: sudo apt-get update && sudo apt-get install -y ansible ansible-galaxy
+        run: sudo apt-get update && sudo apt-get install -y ansible
 
       - name: Install Ansible roles
         run: ansible-galaxy install RedHatOfficial.rhel9_stig -p ./ansible
