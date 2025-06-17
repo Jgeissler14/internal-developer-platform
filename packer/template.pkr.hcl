@@ -24,7 +24,7 @@ build {
   sources = ["source.amazon-ebs.rhel9"]
 
   provisioner "ansible" {
-    playbook_file = "../ansible/main.yml"
+    playbook_file = "./ansible/main.yml"
 
     ansible_env_vars = [
       "ANSIBLE_SCP_EXTRA_ARGS=-O",
