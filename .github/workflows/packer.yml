@@ -30,4 +30,4 @@ jobs:
         run: packer init ./packer/
 
       - name: Run Packer build
-        run: packer build ./packer/
+        run: cd packer && packer build .
