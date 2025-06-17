@@ -16,7 +16,7 @@ source "amazon-ebs" "rhel9" {
   instance_type = "t2.micro"
   source_ami = "ami-0b8c2bd77c5e270cf"
   ssh_username = "ec2-user"
-  ami_name     = "rhel9-stig"
+  ami_name     = "rhel9-stig-${timestamp()}"
 }
 
 build {
