@@ -11,12 +11,16 @@ packer {
   }
 }
 
+locals { 
+  ami_name = "rhel9-stig-${formatdate("YYYY-MM-DD-hhmmss", timestamp())}"
+}
+
 source "amazon-ebs" "rhel9" {
   region      = var.aws_region
   instance_type = "t2.micro"
   source_ami = "ami-0b8c2bd77c5e270cf"
   ssh_username = "ec2-user"
-  ami_name     = "rhel9-stig-${timestamp()}"
+  ami_name     = local.ami_name
 }
 
 build {
