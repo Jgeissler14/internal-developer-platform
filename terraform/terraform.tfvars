@@ -1,2 +1,2 @@
-instance_name = "rhel9-stig-test"
+instance_name = "rhel-ui-youtube"
 instance_type = "t2.micro"
