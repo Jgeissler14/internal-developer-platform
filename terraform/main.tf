@@ -23,7 +23,7 @@ data "aws_ami" "rhel9" {
 
 resource "aws_instance" "demo" {
   ami           = data.aws_ami.rhel9.id
-  instance_type = "t2.micro"
+  instance_type = var.instance_type
   tags = {
     Name = var.instance_name
   }
