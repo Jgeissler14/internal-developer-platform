@@ -1,1 +1,1 @@
-instance_name = "rhel9-stig-demo"
+instance_name = "rhel9-stig-test"
