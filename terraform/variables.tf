@@ -4,7 +4,7 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "ami_id" {
-  description = "AMI ID for EC2 instance"
+variable "instance_name" {
+  description = "Name of the AWS instance"
   type        = string
 }

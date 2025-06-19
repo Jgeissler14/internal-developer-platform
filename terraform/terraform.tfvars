@@ -1,0 +1,1 @@
+instance_name = "rhel9-stig-demo"
