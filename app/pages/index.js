@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import styles from '../styles/Home.module.css';
 
 export default function Home() {
   const [instanceName, setInstanceName] = useState('');
@@ -28,9 +27,9 @@ export default function Home() {
   const [instanceType, setInstanceType] = useState('t2.micro');
 
   return (
-    <div className={styles.container}>
+    <div style={{ padding: '2rem' }}>
       <h1>EC2 Manager</h1>
-      <div className={styles.section}>
+      <div>
         <h2>Create Instance</h2>
         <input
           placeholder="Instance name"
@@ -48,7 +47,7 @@ export default function Home() {
         </select>
         <button onClick={() => callApi('create')}>Create</button>
       </div>
-      <div className={styles.section}>
+      <div style={{ marginTop: '2rem' }}>
         <h2>Manage Instance</h2>
         <input
           placeholder="Instance ID"
@@ -59,11 +58,7 @@ export default function Home() {
         <button onClick={() => callApi('stop')}>Stop</button>
         <button onClick={() => callApi('terminate')}>Terminate</button>
       </div>
-      {message && (
-        <p className={message === 'Success' ? styles.message : styles.error}>
-          {message}
-        </p>
-      )}
+      {message && <p>{message}</p>}
     </div>
   );
 }
