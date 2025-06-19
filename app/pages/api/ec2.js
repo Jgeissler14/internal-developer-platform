@@ -13,8 +13,8 @@ export default async function handler(req, res) {
 
   try {
     if (action === 'create') {
-      const tfvarsPath = path.join(process.cwd(), 'terraform', 'terraform.tfvars');
-      fs.writeFileSync(tfvarsPath, `instance_name = "${instanceName}"`);
+      const tfvarsPath = path.join(process.cwd(), '.', 'terraform.tfvars');
+      fs.writeFileSync(tfvarsPath, `instance_name = "${instanceName}"\ninstance_type = "${req.body.instanceType}"`);
 
       const token = process.env.GITHUB_TOKEN;
       const owner = process.env.GITHUB_OWNER;

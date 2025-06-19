@@ -18,8 +18,8 @@ committed automatically to GitHub:
 
 ```bash
 export GITHUB_TOKEN=<your PAT>
-export GITHUB_OWNER=<github owner>
-export GITHUB_REPO=<repository name>
+export GITHUB_OWNER="jgeissler14"
+export GITHUB_REPO="internal-developer-platform"
 # optional
 export GITHUB_BRANCH=main
 ```
