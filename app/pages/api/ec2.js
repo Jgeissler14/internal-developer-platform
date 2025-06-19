@@ -1,15 +1,45 @@
 import fs from 'fs';
 import path from 'path';
-import { EC2Client, StartInstancesCommand, StopInstancesCommand, TerminateInstancesCommand } from '@aws-sdk/client-ec2';
+import {
+  EC2Client,
+  DescribeInstancesCommand,
+  StartInstancesCommand,
+  StopInstancesCommand,
+  TerminateInstancesCommand,
+} from '@aws-sdk/client-ec2';
 
 export default async function handler(req, res) {
+  const client = new EC2Client({ region: process.env.AWS_REGION || 'us-east-1' });
+
+  if (req.method === 'GET') {
+    try {
+      const data = await client.send(new DescribeInstancesCommand({}));
+      const instances = [];
+      for (const reservation of data.Reservations || []) {
+        for (const instance of reservation.Instances || []) {
+          const nameTag = (instance.Tags || []).find(t => t.Key === 'Name');
+          instances.push({
+            id: instance.InstanceId,
+            state: instance.State?.Name,
+            type: instance.InstanceType,
+            name: nameTag ? nameTag.Value : '',
+          });
+        }
+      }
+      res.status(200).json({ instances });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err.message });
+    }
+    return;
+  }
+
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
     return;
   }
 
-  const { action, instanceId, instanceName } = req.body;
-  const client = new EC2Client({ region: process.env.AWS_REGION || 'us-east-1' });
+  const { action, instanceId, instanceIds, instanceName } = req.body;
 
   try {
     if (action === 'create') {
@@ -51,11 +81,14 @@ export default async function handler(req, res) {
         });
       }
     } else if (action === 'start') {
-      await client.send(new StartInstancesCommand({ InstanceIds: [instanceId] }));
+      const ids = instanceIds || [instanceId];
+      await client.send(new StartInstancesCommand({ InstanceIds: ids }));
     } else if (action === 'stop') {
-      await client.send(new StopInstancesCommand({ InstanceIds: [instanceId] }));
+      const ids = instanceIds || [instanceId];
+      await client.send(new StopInstancesCommand({ InstanceIds: ids }));
     } else if (action === 'terminate') {
-      await client.send(new TerminateInstancesCommand({ InstanceIds: [instanceId] }));
+      const ids = instanceIds || [instanceId];
+      await client.send(new TerminateInstancesCommand({ InstanceIds: ids }));
     } else {
       throw new Error('Unknown action');
     }

@@ -1,18 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from '../styles/Home.module.css';
 
 export default function Home() {
   const [instanceName, setInstanceName] = useState('');
-  const [instanceId, setInstanceId] = useState('');
+  const [instanceType, setInstanceType] = useState('t2.micro');
+  const [instances, setInstances] = useState([]);
+  const [selected, setSelected] = useState([]);
   const [message, setMessage] = useState('');
 
-  const callApi = async (action) => {
+  const fetchInstances = async () => {
+    const res = await fetch('/api/ec2');
+    const data = await res.json();
+    if (res.ok) setInstances(data.instances);
+  };
+
+  useEffect(() => {
+    fetchInstances();
+  }, []);
+
+  const callApi = async (action, ids = selected) => {
     const body = { action };
     if (action === 'create') {
       body.instanceName = instanceName;
       body.instanceType = instanceType;
     } else {
-      body.instanceId = instanceId;
+      body.instanceIds = ids;
     }
 
     const res = await fetch('/api/ec2', {
@@ -21,11 +33,12 @@ export default function Home() {
       body: JSON.stringify(body),
     });
     const data = await res.json();
-    if (res.ok) setMessage('Success');
-    else setMessage(data.error || 'Error');
+    if (res.ok) {
+      setMessage('Success');
+      fetchInstances();
+      setSelected([]);
+    } else setMessage(data.error || 'Error');
   };
-
-  const [instanceType, setInstanceType] = useState('t2.micro');
 
   return (
     <div className={styles.container}>
@@ -49,15 +62,47 @@ export default function Home() {
         <button onClick={() => callApi('create')}>Create</button>
       </div>
       <div className={styles.section}>
-        <h2>Manage Instance</h2>
-        <input
-          placeholder="Instance ID"
-          value={instanceId}
-          onChange={e => setInstanceId(e.target.value)}
-        />
-        <button onClick={() => callApi('start')}>Start</button>
-        <button onClick={() => callApi('stop')}>Stop</button>
-        <button onClick={() => callApi('terminate')}>Terminate</button>
+        <h2>Instances</h2>
+        <button onClick={fetchInstances}>Refresh</button>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Name</th>
+              <th>ID</th>
+              <th>Type</th>
+              <th>State</th>
+            </tr>
+          </thead>
+          <tbody>
+            {instances.map(inst => (
+              <tr key={inst.id}>
+                <td>
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(inst.id)}
+                    onChange={() =>
+                      setSelected(prev =>
+                        prev.includes(inst.id)
+                          ? prev.filter(i => i !== inst.id)
+                          : [...prev, inst.id]
+                      )
+                    }
+                  />
+                </td>
+                <td>{inst.name}</td>
+                <td>{inst.id}</td>
+                <td>{inst.type}</td>
+                <td>{inst.state}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div className={styles.buttons}>
+          <button onClick={() => callApi('start')}>Start</button>
+          <button onClick={() => callApi('stop')}>Stop</button>
+          <button onClick={() => callApi('terminate')}>Terminate</button>
+        </div>
       </div>
       {message && (
         <p className={message === 'Success' ? styles.message : styles.error}>
